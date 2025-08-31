@@ -3,6 +3,7 @@ import { CheckCircle, ArrowRight, Trophy, Play, RotateCcw } from 'lucide-react'
 import { useMazeStore, useMazeSelectors } from './store/useMazeStore'
 import { useMazeSearch } from './hooks/useMazeSearch'
 import { MazeComponent } from './components/maze-component'
+import { Button } from './components/button'
 
 export default function App() {
   const { 
@@ -73,11 +74,11 @@ export default function App() {
     )
   }
 
-  const getButtonStyle = () => {
-    if (isSearching) return 'px-8 py-3 bg-yellow-500 text-white rounded-lg text-lg font-semibold cursor-not-allowed'
-    if (isCompleted && foundKey) return 'px-8 py-3 bg-green-600 text-white rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors'
-    if (isCompleted) return 'px-8 py-3 bg-red-500 text-white rounded-lg text-lg font-semibold hover:bg-red-600 transition-colors'
-    return 'px-8 py-3 bg-blue-500 text-white rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors'
+  const getButtonVariant = () => {
+    if (isSearching) return 'warning'
+    if (isCompleted && foundKey) return 'success'
+    if (isCompleted) return 'destructive'
+    return 'default'
   }
 
   return (
@@ -114,44 +115,44 @@ export default function App() {
         {/* Maze Selector */}
         <div className="flex gap-2">
           {Array.from({ length: totalMazes }, (_, index) => (
-            <button
+            <Button
               key={index}
               onClick={() => setCurrentMazeIndex(index)}
               disabled={isSearching}
-              className={`px-4 py-2 rounded transition-colors ${
-                currentMazeIndex === index
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              } ${isSearching ? 'cursor-not-allowed opacity-50' : ''}`}
+              variant={currentMazeIndex === index ? 'default' : 'secondary'}
+              className="flex items-center gap-2"
             >
               Maze {index + 1}
-              {isMazeCompleted(index) && <CheckCircle size={16} className="ml-1 text-green-500" />}
-            </button>
+              {isMazeCompleted(index) && <CheckCircle size={16} className="text-green-500" />}
+            </Button>
           ))}
         </div>
 
         {/* Main Action Buttons */}
         <div className="flex gap-4">
           {/* Start/Reset Button */}
-          <button 
+          <Button 
             onClick={handleButtonClick}
             disabled={isSearching}
-            className={getButtonStyle()}
+            variant={getButtonVariant()}
+            size="lg"
           >
             {getButtonText()}
-          </button>
+          </Button>
 
           {/* Next Maze Button - Only show when current maze is completed and has next maze */}
           {foundKey && hasNextMaze && (
-            <button 
+            <Button 
               onClick={() => {
                 goToNextMaze()
               }}
-              className="px-8 py-3 bg-purple-500 text-white rounded-lg text-lg font-semibold hover:bg-purple-600 transition-colors flex items-center gap-2"
+              variant="purple"
+              size="lg"
+              className="flex items-center gap-2"
             >
               Next Maze 
               <ArrowRight size={16} />
-            </button>
+            </Button>
           )}
 
           {/* All Completed Message */}

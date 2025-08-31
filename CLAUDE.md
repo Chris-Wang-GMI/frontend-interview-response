@@ -9,8 +9,8 @@ This is a maze navigation application where a ghost uses Depth-First Search (DFS
 ## Development Commands
 
 ```bash
-# Install dependencies
-npm install
+# Install dependencies  
+pnpm install
 
 # Start development (runs both client and server concurrently)
 npm run dev
@@ -33,9 +33,10 @@ npm run dev:server
 ### Frontend Architecture
 - **Entry Point**: `src/app.tsx` - Main application component
 - **File Structure**:
-  - `src/hooks/` - Custom React hooks (useMazeData, useMazeSearch)  
+  - `src/hooks/` - Custom React hooks (useMazeSearch)
   - `src/components/` - React components (maze-component.tsx)
-- **State Management**: Currently uses React hooks, designed to be converted to Zustand
+  - `src/store/` - Zustand state management (useMazeStore.ts)
+- **State Management**: Zustand store managing maze data, completion tracking, and progression
 - **Styling**: Tailwind CSS with specific color requirements:
   - Walls: `sky-800`
   - Paths: `sky-100` 
@@ -44,16 +45,24 @@ npm run dev:server
 - **Icons**: Lucide React (`<Ghost/>`, `<Key/>`)
 
 ### Core Features
-1. **Maze Rendering**: Grid-based visualization with color-coded cells
+1. **Maze Rendering**: Grid-based visualization with color-coded cells and Lucide React icons
 2. **DFS Algorithm**: Step-by-step ghost navigation with 300ms animation intervals
-3. **Interactive Controls**: Start/reset buttons, maze selection
+3. **Interactive Controls**: Start/reset buttons, maze selection, next maze progression
 4. **Real-time Visualization**: Shows current ghost position and visited path
+5. **Progress Tracking**: Tracks completed mazes, shows completion status with icons
+6. **Maze Progression**: Automatic "Next Maze" button when key is found
 
 ### Key Implementation Details
 - **DFS Search**: Uses stack-based implementation in `useMazeSearch` hook
 - **Animation**: Recursive setTimeout calls for step-by-step visualization
-- **State Management**: Search state includes currentPosition, visitedPath, isSearching, isCompleted, foundKey
-- **Maze Selection**: User can switch between 3 different maze complexities
+- **Zustand Store**: Manages maze data, completion tracking, current maze selection, and progression logic
+- **State Integration**: useMazeSearch hook integrates with store to mark mazes as completed
+- **UI Icons**: Lucide React icons for visual feedback (CheckCircle, Play, RotateCcw, ArrowRight, Trophy)
 
-### Current Development Focus
-The codebase is structured for adding Zustand state management and implementing maze progression features (next maze button when current maze is completed).
+### Dependencies
+- **React + TypeScript**: Core framework
+- **Vite**: Build tool and dev server  
+- **Zustand**: Global state management
+- **Tailwind CSS**: Styling system
+- **Lucide React**: Icon library
+- **Hono**: Backend API framework
