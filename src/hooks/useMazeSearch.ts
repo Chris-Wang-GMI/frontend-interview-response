@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Maze } from '../../types'
+import { useMazeStore } from '../store/useMazeStore'
 
 type Position = { row: number; col: number }
 
@@ -12,6 +13,7 @@ interface SearchState {
 }
 
 export function useMazeSearch(maze: Maze) {
+  const { currentMazeIndex, markMazeCompleted } = useMazeStore()
   const [searchState, setSearchState] = useState<SearchState>({
     currentPosition: null,
     visitedPath: [],
@@ -86,6 +88,8 @@ export function useMazeSearch(maze: Maze) {
           isCompleted: true,
           foundKey: true
         }))
+        // Mark current maze as completed in store
+        markMazeCompleted(currentMazeIndex)
         return
       }
 
