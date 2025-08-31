@@ -1,13 +1,27 @@
-import { useState, useEffect } from 'react'
-import { useMazeData } from './hooks/useMazeData'
+import { useEffect } from 'react'
+import { CheckCircle, ArrowRight, Trophy, Play, RotateCcw } from 'lucide-react'
+import { useMazeStore, useMazeSelectors } from './store/useMazeStore'
 import { useMazeSearch } from './hooks/useMazeSearch'
 import { MazeComponent } from './components/maze-component'
 
 export default function App() {
-  const { mazes, loading, error } = useMazeData()
-  const [selectedMazeIndex, setSelectedMazeIndex] = useState(0)
+  const { 
+    loading, 
+    error, 
+    currentMazeIndex, 
+    setCurrentMazeIndex, 
+    goToNextMaze,
+    fetchMazes 
+  } = useMazeStore()
   
-  const currentMaze = mazes[selectedMazeIndex]
+  const { 
+    currentMaze, 
+    hasNextMaze,
+    totalMazes,
+    completedCount,
+    isMazeCompleted 
+  } = useMazeSelectors()
+  
   const { 
     currentPosition, 
     visitedPath, 
@@ -18,14 +32,19 @@ export default function App() {
     resetSearch 
   } = useMazeSearch(currentMaze || [])
 
+  // Fetch mazes on mount
+  useEffect(() => {
+    fetchMazes()
+  }, [fetchMazes])
+
   // Reset search when maze changes
   useEffect(() => {
     resetSearch()
-  }, [selectedMazeIndex, resetSearch])
+  }, [currentMazeIndex, resetSearch])
 
   if (loading) return <div className="p-8">Loading mazes...</div>
   if (error) return <div className="p-8 text-red-500">Error: {error}</div>
-  if (mazes.length === 0) return <div className="p-8">No mazes found</div>
+  if (totalMazes === 0) return <div className="p-8">No mazes found</div>
 
   const handleButtonClick = () => {
     if (isSearching) return // Prevent clicking during search
@@ -39,9 +58,19 @@ export default function App() {
   const getButtonText = () => {
     if (isSearching) return 'Searching...'
     if (isCompleted) {
-      return foundKey ? 'Key Found! Reset' : 'Search Complete! Reset'
+      return (
+        <span className="flex items-center gap-2">
+          <RotateCcw size={16} />
+          {foundKey ? 'Key Found! Reset' : 'Search Complete! Reset'}
+        </span>
+      )
     }
-    return 'Start Search'
+    return (
+      <span className="flex items-center gap-2">
+        <Play size={16} />
+        Start Search
+      </span>
+    )
   }
 
   const getButtonStyle = () => {
@@ -59,7 +88,12 @@ export default function App() {
         <div className="text-center">
           <p className="text-gray-600 mb-2">DFS Algorithm - Ghost searching for key</p>
           {isSearching && <p className="text-blue-600 font-medium">Searching in progress...</p>}
-          {foundKey && <p className="text-green-600 font-medium">🎉 Key found!</p>}
+          {foundKey && (
+            <p className="text-green-600 font-medium flex items-center gap-2 justify-center">
+              <Trophy size={16} />
+              Key found!
+            </p>
+          )}
         </div>
         <MazeComponent 
           maze={currentMaze} 
@@ -70,32 +104,64 @@ export default function App() {
 
       {/* Controls */}
       <div className="flex flex-col items-center gap-4">
+        {/* Progress Info */}
+        <div className="text-center mb-4">
+          <p className="text-sm text-gray-600">
+            Progress: {completedCount}/{totalMazes} mazes completed
+          </p>
+        </div>
+
         {/* Maze Selector */}
         <div className="flex gap-2">
-          {mazes.map((_, index) => (
+          {Array.from({ length: totalMazes }, (_, index) => (
             <button
               key={index}
-              onClick={() => setSelectedMazeIndex(index)}
+              onClick={() => setCurrentMazeIndex(index)}
               disabled={isSearching}
               className={`px-4 py-2 rounded transition-colors ${
-                selectedMazeIndex === index
+                currentMazeIndex === index
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               } ${isSearching ? 'cursor-not-allowed opacity-50' : ''}`}
             >
               Maze {index + 1}
+              {isMazeCompleted(index) && <CheckCircle size={16} className="ml-1 text-green-500" />}
             </button>
           ))}
         </div>
 
-        {/* Start/Reset Button */}
-        <button 
-          onClick={handleButtonClick}
-          disabled={isSearching}
-          className={getButtonStyle()}
-        >
-          {getButtonText()}
-        </button>
+        {/* Main Action Buttons */}
+        <div className="flex gap-4">
+          {/* Start/Reset Button */}
+          <button 
+            onClick={handleButtonClick}
+            disabled={isSearching}
+            className={getButtonStyle()}
+          >
+            {getButtonText()}
+          </button>
+
+          {/* Next Maze Button - Only show when current maze is completed and has next maze */}
+          {foundKey && hasNextMaze && (
+            <button 
+              onClick={() => {
+                goToNextMaze()
+              }}
+              className="px-8 py-3 bg-purple-500 text-white rounded-lg text-lg font-semibold hover:bg-purple-600 transition-colors flex items-center gap-2"
+            >
+              Next Maze 
+              <ArrowRight size={16} />
+            </button>
+          )}
+
+          {/* All Completed Message */}
+          {foundKey && !hasNextMaze && (
+            <div className="px-8 py-3 bg-green-100 text-green-800 rounded-lg text-lg font-semibold flex items-center gap-2">
+              <Trophy size={20} className="text-green-600" />
+              All mazes completed!
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
