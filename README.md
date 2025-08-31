@@ -1,4 +1,12 @@
 
+# Record
+
+## token cost
+- │ 2025 08-31 │ - sonnet-4 │      348 │    8,720 │   303,621 │ 1,786,296 │ 2,098,985 │    $1.81
+
+
+---
+
 # Frontend Engineer Interview Assessment
 
 Please fork this repository to your own GitHub and complete the assignment within `7 days`. After completing it, please provide us with the GitHub link.

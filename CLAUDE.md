@@ -65,4 +65,18 @@ npm run dev:server
 - **Zustand**: Global state management
 - **Tailwind CSS**: Styling system
 - **Lucide React**: Icon library
+- **shadcn/ui**: UI component library (Button component)
 - **Hono**: Backend API framework
+
+### Testing Stack
+- **Vitest**: Fast test runner with Vite integration
+- **@testing-library/react**: React component testing utilities
+- **@testing-library/user-event**: User interaction simulation
+- **@testing-library/jest-dom**: DOM testing matchers
+- **jsdom**: Browser environment simulation
+
+### Test Coverage
+- **39 tests total** across 4 test files
+- **100% pass rate** with comprehensive BDD format
+- **Core features tested**: DFS algorithm, Zustand store, UI components, user interactions
+- **Coverage types**: Happy path, exception path, accessibility, performance
